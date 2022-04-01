@@ -505,9 +505,10 @@ class _CoffeeConceptListState extends State<CoffeeConceptList> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Scaffold(
-      extendBody: true,
-      extendBodyBehindAppBar: true,
+      extendBody: false,
+      extendBodyBehindAppBar: false,
       appBar: AppBar(
         elevation: 0.0,
         backgroundColor: Colors.transparent,
@@ -518,43 +519,78 @@ class _CoffeeConceptListState extends State<CoffeeConceptList> {
             top: 0,
             left: 0,
             right: 0,
-            child: Container(
-              height: 100.0,
-              color: Colors.greenAccent,
+            child: Column(
+              children: [
+                AnimatedSwitcher(
+                  key: Key(coffees[_currentPage.toInt()].name),
+                  duration: _duration,
+                  child: Text(
+                    '\$${coffees[_currentPage.toInt()].price.toStringAsFixed(2)}',
+                  ),
+                ),
+              ],
             ),
           ),
-          PageView.builder(
-            itemCount: coffees.length + 1,
-            scrollDirection: Axis.vertical,
-            controller: _pageCoffeeController,
-            itemBuilder: (context, index) {
-              if (index == 0) {
-                return const SizedBox.shrink();
-              }
-              final _coffee = coffees.elementAt(index - 1);
-              final result = _currentPage - index + 1;
-              final value = -0.4 * result + 1;
-              final opacity = value.clamp(0.0, 1.0);
-              return Transform(
-                alignment: Alignment.bottomCenter,
-                transform: Matrix4.identity()
-                  ..setEntry(3, 2, 0.001)
-                  ..translate(
-                    0.0,
-                    MediaQuery.of(context).size.height /
-                        2.6 *
-                        (1 - value).abs(),
-                  )
-                  ..scale(value),
-                child: Opacity(
-                  opacity: opacity,
-                  child: Image.asset(_coffee.image),
-                ),
-              );
-            },
+          Positioned(
+            height: size.height * .3,
+            bottom: -size.height * .22,
+            left: 20,
+            right: 20,
+            child: const DecoratedBox(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.brown,
+                    blurRadius: 90,
+                    spreadRadius: 45,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Transform.scale(
+            scale: 1.6,
+            alignment: Alignment.bottomCenter,
+            child: PageView.builder(
+              itemCount: coffees.length + 1,
+              scrollDirection: Axis.vertical,
+              controller: _pageCoffeeController,
+              itemBuilder: (context, index) {
+                if (index == 0) {
+                  return const SizedBox.shrink();
+                }
+                final _coffee = coffees.elementAt(index - 1);
+                final result = _currentPage - index + 1;
+                final value = -0.4 * result + 1;
+                final opacity = value.clamp(0.0, 1.0);
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 20.0),
+                  child: Transform(
+                    alignment: Alignment.bottomCenter,
+                    transform: Matrix4.identity()
+                      ..setEntry(3, 2, 0.001)
+                      ..translate(
+                        0.0,
+                        size.height / 2.6 * (1 - value).abs(),
+                      )
+                      ..scale(value),
+                    child: Opacity(
+                      opacity: opacity,
+                      child: Image.asset(
+                        _coffee.image,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
         ],
       ),
     );
   }
 }
+
+const _duration = Duration(milliseconds: 300);
