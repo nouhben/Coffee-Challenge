@@ -541,17 +541,34 @@ class _CoffeeConceptListState extends State<CoffeeConceptList> {
                           (1 - (index - _textPage).abs()).clamp(0.0, 1.0);
                       return Opacity(
                         opacity: opacity,
-                        child: Text(coffees[index].name),
+                        child: Padding(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: size.width * .2),
+                          child: Text(
+                            coffees[index].name,
+                            maxLines: 2,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 26.0,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
                       );
                     },
                   ),
                 ),
+                const SizedBox(height: 16.0),
                 AnimatedSwitcher(
                   key: Key(coffees[_currentPage.toInt()].name),
                   duration: _duration,
                   child: Text(
                     '\$${coffees[_currentPage.toInt()].price.toStringAsFixed(2)}',
-                    style: const TextStyle(fontSize: 30.0),
+                    style: Theme.of(context)
+                        .textTheme
+                        .caption!
+                        .copyWith(fontSize: 22.0),
                   ),
                 ),
               ],
